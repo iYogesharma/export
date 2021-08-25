@@ -1,10 +1,12 @@
 # Export
-Export data in database to various file format . Currently only xls,json and csv file formats are supported
+Export data in database to various file format . Currently xls,json and csv file formats are supported
 
-##Example
+## Example
 
-  <h6>Using Eloquent</h6>
-```php4
+<h6>Using Eloquent</h6>
+
+```php
+
   use YS\Export\Csv;
   use App\User;
   
@@ -16,7 +18,9 @@ Export data in database to various file format . Currently only xls,json and csv
 ```
 
   <h6>Using DB Facade</h6>
+  
 ```php
+
   use YS\Export\Csv;
   use App\User;
   
@@ -40,7 +44,7 @@ Export data in database to various file format . Currently only xls,json and csv
       return $csv->response();
   } 
 ```
-<p>Similarly you can use Json export</p>
+### Similarly you can use Json and Excel export
 
 ```php
   use YS\Export\Json;
@@ -52,6 +56,18 @@ Export data in database to various file format . Currently only xls,json and csv
       return $json->response();
   } 
 ```
+
+```php
+  use YS\Export\Xls;
+  use App\User;
+  
+  public function exportUsers()
+  {
+      $json = new Xls( DB::table('users')->select('name','email'));
+      return $json->response();
+  } 
+  ```
+  
 <p>You can provide column names inside select statement in order to export only selected
 columns from database.Optionally you can also define column names inside ys-export config file
 which you do not want to export in  file like id,password etc...</p>
