@@ -1,0 +1,52 @@
+{
+  "name": "iyogesharma/export",
+  "description": "Export data in database to various file format",
+  "license": "MIT",
+  "type": "project",
+  "keywords": [
+    "iYogesharma",
+    "export",
+    "laravel",
+    "csv"
+  ],
+  "authors": [
+    {
+      "name": "Yogesh Sharma",
+      "email": "iyogesharma@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "laravel/framework": ">=5.5",
+    "phpoffice/phpspreadsheet": "^1.18"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.4|^9.0",
+    "orchestra/testbench": "^3.5.0|~6.4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "YS\\Export\\": "src/"
+    },
+    "files": [
+      "src/Helpers/helper.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "YS\\Export\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "YS\\Export\\ExportServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
