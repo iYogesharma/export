@@ -2,7 +2,7 @@
     
     namespace YS\Export;
 
-    use YS\DataTables\Exceptions\IncorrectDataSourceException;
+    use YS\Export\IncorrectDataSourceException;
     use Illuminate\Support\Facades\Schema;
 
     abstract class ExportHandler implements ExportHandlerInterface
