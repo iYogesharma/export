@@ -50,7 +50,7 @@
         {
             $this->setQuery( $source );
             
-            $this->filename = $filename ?? $this->getName();
+            $this->filename = $filename ?? $this->getFileName();
         
             $this->filepath = tempnam(sys_get_temp_dir(), "{$this->ext}_");
             
@@ -68,9 +68,19 @@
          *
          * @return string
          */
-        protected  function getName()
+        public  function getFileName()
         {
             return $this->filename;
+        }
+    
+        /**
+         * File to export
+         *
+         * @return string
+         */
+        public function getFile()
+        {
+            return $this->file;
         }
     
         /**
