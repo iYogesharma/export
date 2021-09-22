@@ -2,13 +2,13 @@
     
     namespace YS\Export\Tests;
     
-    use YS\DataTables\Tests\Models\User;
+    use YS\Export\Tests\Models\User;
     use Illuminate\Database\Schema\Blueprint;
     use Orchestra\Testbench\TestCase as BaseTestCase;
     
     abstract class TestCase extends BaseTestCase
     {
-        protected function setUp()
+        protected function setUp():void
         {
             parent::setUp();
             

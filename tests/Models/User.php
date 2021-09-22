@@ -13,4 +13,6 @@
          */
         protected $table='users';
         
+        protected $fillable = ["name",'email'];
+        
     }
