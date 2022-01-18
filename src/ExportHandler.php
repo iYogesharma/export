@@ -1,5 +1,5 @@
 <?php
-    
+
     namespace YS\Export;
 
     use YS\Export\IncorrectDataSourceException;
@@ -9,34 +9,34 @@
     {
         /** Instance of query builder */
         protected  $query;
-    
+
         /** Hold column headings */
         protected $headers;
-    
+
         /** Whether to set column headings or not@var bool */
         protected  $heading = true;
-    
+
         /** query column names */
         protected $columns;
-    
+
         /** Reference to the file */
         protected $file;
-    
+
         /** @var string Default file name */
         protected  $filename = "report";
-    
+
         /** @var string temp storage path of file */
         protected  $filepath;
-    
+
         /** @var string  $ext extension of file */
         protected  $ext = ".csv";
-    
+
         /** whether to sanitize the column values */
         protected  $sanitize = false;
-    
+
         /** @var int Total number of records in result */
         protected $totalRecords = 0;
-    
+
         /**
          * ExportHandler constructor.
          * @param object $source
@@ -49,20 +49,20 @@
         public function __construct( $source, $filename=null,  $headers = null, $sanitize = false )
         {
             $this->setQuery( $source );
-            
+
             $this->filename = $filename ?? $this->getFileName();
-        
+
             $this->filepath = tempnam(sys_get_temp_dir(), "{$this->ext}_");
-            
+
             $this->sanitize  = $sanitize;
-        
+
             $this->guessColumnsIfAstrixInSelectStatement();
-            
+
             $this->setHeaderAndColumns( $headers );
-           
+
             $this->createExport( $filename );
         }
-    
+
         /**
          * File name to export
          *
@@ -72,7 +72,7 @@
         {
             return $this->filename;
         }
-    
+
         /**
          * File to export
          *
@@ -82,7 +82,17 @@
         {
             return $this->file;
         }
-    
+
+        /**
+         * File to export
+         *
+         * @return string
+         */
+        public function getPath()
+        {
+            return $this->filepath;
+        }
+
         /**
          * Set @property $query of class
          * @param $source
@@ -95,7 +105,7 @@
             if( $source instanceof \Illuminate\Database\Query\Builder )
             {
                 $this->query = $source;
-            
+
             }
             else if( $source instanceof \Illuminate\Database\Eloquent\Builder )
             {
@@ -108,7 +118,7 @@
                 );
             }
         }
-    
+
         /**
          * get query result
          * @return array
@@ -117,7 +127,7 @@
         {
             return $this->query->get()->toArray();
         }
-    
+
         /**
          * Total number of records found in result
          * @return int
@@ -126,7 +136,7 @@
         {
             return $this->totalRecords;
         }
-        
+
         /**
          * Set headers and column names to use in query
          * for the sheet to export
@@ -144,11 +154,11 @@
             {
                 $this->guessColumnNamesAndHeaders();
             }
-        
+
             /** The delete columns that are no longer needed in the exported sheet */
             $this->deleteUnwantedKeys();
         }
-    
+
         /**
          * guess column names if "table.*" is present in select statement
          * and add those columns to query select statement.
@@ -167,9 +177,9 @@
                     if( strpos($c,'.*'))
                     {
                         unset($this->query->columns[$k]);
-                        
+
                         $this->addTableColumnsInQuery( $c );
-            
+
                     }
                     else if ( trim($c ) === '*' )
                     {
@@ -177,9 +187,9 @@
                     }
                 }
             }
-            
+
         }
-    
+
         /**
          * Begin the process of exporting data
          * to desired file format
@@ -188,19 +198,19 @@
          */
         protected function createExport()
         {
-        
+
             $this->openFileStream();
-        
+
             /** Set Column Headings Of File  */
             $this->heading ? $this->setColumnHeadings() : null ;
-        
+
             /** Insert Data In The File */
             $this->addCells();
-        
-            $this->closeFileStream();
-        
+
+
+
         }
-    
+
         /**
          * Set pointer to the file
          *
@@ -211,7 +221,7 @@
             // create a file pointer connected to the output stream
             $this->file = fopen($this->filepath, 'w');
         }
-    
+
         /**
          * Unset file pointer
          *
@@ -222,7 +232,7 @@
             // create a file pointer connected to the output stream
             fclose( $this->file );
         }
-    
+
         /**
          * Guess column names and headers from @property query
          *
@@ -235,22 +245,22 @@
                 if(!strpos($c,'_id') && !strpos($c,'.*'))
                 {
                     $column = trim($this->getQualifiedColumnName( $c ));
-    
+
                     if( $this->heading )
                     {
                         $this->sanitize($column );
                         $this->headers[]= heading_case($column);
                     }
-                    
+
                 }
                 else
                 {
                     unset ( $this->query->columns[$k] );
                 }
-            
+
             }
         }
-    
+
         /**
          * Guess column names from @property query
          * @param array $headers
@@ -264,7 +274,7 @@
                 $this->headers  =  $headers;
                 array_walk($this->headers, call_user_func( [ $this, 'sanitize' ]) );
             }
-        
+
             foreach( $this->query->columns as $k => $c )
             {
                 if( strpos($c,'_id') || strpos($c,'.*'))
@@ -273,7 +283,7 @@
                 }
             }
         }
-    
+
         /**
          * if * is given in select statement in query get
          * all columns from schema using table name provided with *
@@ -284,21 +294,21 @@
         protected function addTableColumnsInQuery( $column )
         {
             $table = explode('.*',$column)[0];
-    
+
             $columns = Schema::getColumnListing( $table );
-    
+
             delete_keys($columns, config('ys-export.skip'));
-            
+
             $label = str_singular( $table );// to differentiate columns name in case two columns with same name
-            
+
             array_walk($columns, function(&$value)use($table,$label) { $value = "{$table}.{$value} as {$label}_{$value}"; } );
-       
+
             $this->query->columns = array_merge(
                 $this->query->columns,
                 $columns
             );
         }
-    
+
         /**
          * Get name of column from query
          * @param string $name
@@ -309,14 +319,14 @@
             if(strpos($name,' as '))
             {
                 $column = explode(' as ',$name)[1];
-            
+
             }
             else
             {
                 if(isset(explode('.',$name)[1]))
                 {
                     $column = explode('.',$name)[1];;
-                
+
                 }
                 else
                 {
@@ -325,14 +335,14 @@
             }
             return $column;
         }
-    
+
         /**
          * Insert Data In The File
          *
          * @return void
          */
         abstract public function addCells();
-    
+
         /**
          * Unset the query column that we don't want to export
          *
@@ -343,17 +353,18 @@
             if ( $this->heading ) {
                 delete_keys($this->headers, array_map('ucwords', str_replace( "_", " ", config('ys-export.skip') , $i ) ) );
             }
-//            delete_keys($this->columns, config('ys-export.skip'));
             delete_keys($this->query->columns, config('ys-export.skip'));
-        
+
         }
-        
+
         /**
          * return response based on type of request
          * @return mixed
          */
         public function response()
         {
+            $this->closeFileStream();
+
             if( $this->totalRecords > 3000 )
             {
                 return streamDownload( $this->filepath, $this->filename, $this->ext );
@@ -363,9 +374,9 @@
                 return response()->download($this->filepath,"$this->filename$this->ext")->deleteFileAfterSend(true);
             }
         }
-        
+
         //Original PHP code by Chirp Internet: www.chirpinternet.eu
-        
+
         /**
          * sanitize column values before they get added to file to export
          * @param $string
