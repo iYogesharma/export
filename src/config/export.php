@@ -9,7 +9,8 @@
        |
        | The column names that you don't want to show in the exported file .
        | Default are active and id you can add more columns here or remove
-       | if you want to show them on exported file
+       | if you want to show them on exported file. By default all columns
+       | containing _id in name are ignored for security reason
        |
         */
     
