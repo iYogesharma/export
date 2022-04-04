@@ -264,6 +264,10 @@
                 {
                     $column = trim($this->getQualifiedColumnName( $c ));
 
+                    if( in_array( $column, config('ys-export.skip'))){
+                        unset ( $this->query->columns[$k]);
+                    }
+                    
                     if( $this->heading )
                     {
                         $this->sanitize($column );
