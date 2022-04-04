@@ -2,8 +2,10 @@
 
     namespace YS\Export;
 
+    use YS\Datatable\AbstractDatatable;
     use YS\Export\IncorrectDataSourceException;
     use Illuminate\Support\Facades\Schema;
+    use Closure;
 
     abstract class ExportHandler implements ExportHandlerInterface
     {
@@ -37,6 +39,9 @@
         /** @var int Total number of records in result */
         protected $totalRecords = 0;
 
+        /** @var string  $result query result */
+        protected  $result;
+
         /**
          * ExportHandler constructor.
          * @param object $source
@@ -46,7 +51,7 @@
          *
          * @throws IncorrectDataSourceException
          */
-        public function __construct( $source, $filename=null,  $headers = null, $sanitize = false )
+        public function __construct( $source, $export = true, $filename=null,  $headers = null, $sanitize = false )
         {
             $this->setQuery( $source );
 
@@ -60,7 +65,9 @@
 
             $this->setHeaderAndColumns( $headers );
 
-            $this->createExport( $filename );
+            $this->result = $this->query->get();
+
+            $export ? $this->createExport( $filename ) : '';
         }
 
         /**
@@ -91,6 +98,19 @@
         public function getPath()
         {
             return $this->filepath;
+        }
+
+        /**
+         * add data in file to be exported
+         * @return this
+         */
+        public function export()
+        {
+            $this->createExport();
+
+            $this->closeFileStream();
+
+            return $this;
         }
 
         /**
@@ -125,7 +145,7 @@
          */
         public function getResult()
         {
-            return $this->query->get()->toArray();
+            return $this->result->toArray();
         }
 
         /**
@@ -194,7 +214,7 @@
          * Begin the process of exporting data
          * to desired file format
          *
-         * @return void
+         * @return self
          */
         protected function createExport()
         {
@@ -206,8 +226,6 @@
 
             /** Insert Data In The File */
             $this->addCells();
-
-
 
         }
 
@@ -334,6 +352,40 @@
                 }
             }
             return $column;
+        }
+
+        /**
+         * Add/edit column details of export
+         *
+         * @param string column name
+         * @param Closure
+         *
+         * @return $this
+         */
+        public function add($column, Closure $closure)
+        {
+            foreach ($this->result as $r) {
+                $r->$column = $closure->call($this, $r);
+            }
+            return $this;
+        }
+
+        /**
+         * Add/edit  details of multiple columns of export
+         *
+         * @param array $column
+         *
+         * @return $this
+         */
+        public function addColumns(array $column)
+        {
+            foreach ($column as $c => $cols) {
+                foreach ($this->result as $r) {
+                    $r->$c = $cols->call($this, $r);
+                }
+
+            }
+            return $this;
         }
 
         /**
