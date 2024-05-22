@@ -269,7 +269,7 @@
         public function addCells()
         {
             $length = 0;
-            $this->query->get()->chunk(1000)
+            $this->result->chunk(1000)
             ->each ( function( $results ) use(&$length) {
                 foreach($results as $k => $r ){
                     $row = $k+3;$length++;
