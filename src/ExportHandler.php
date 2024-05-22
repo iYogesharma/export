@@ -194,6 +194,11 @@
             {
                 foreach( $this->query->columns as $k => $c )
                 {
+                    if ( $c instanceof \Illuminate\Database\Query\Expression) 
+                    {
+                        $c = $c->getValue($this->query->grammar);
+                    }
+                    
                     if( strpos($c,'.*'))
                     {
                         unset($this->query->columns[$k]);
@@ -260,6 +265,11 @@
         {
             foreach( $this->query->columns as $k => $c )
             {
+                if ( $c instanceof \Illuminate\Database\Query\Expression) 
+                {
+                    $c = $c->getValue($this->query->grammar);
+                }
+                
                 if(!strpos($c,'_id') && !strpos($c,'.*'))
                 {
                     $column = trim($this->getQualifiedColumnName( $c ));
@@ -299,6 +309,11 @@
 
             foreach( $this->query->columns as $k => $c )
             {
+                if ( $c instanceof \Illuminate\Database\Query\Expression) 
+                {
+                    $c = $c->getValue($this->query->grammar);
+                }
+                
                 if( strpos($c,'_id') || strpos($c,'.*'))
                 {
                     unset ( $this->query->columns[$k] );
