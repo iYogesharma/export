@@ -24,7 +24,7 @@
         protected $style = [];
 
         /** @var string  $ext extension of file */
-        protected  $ext = ".xls";
+        protected  $ext = ".xlsx";
 
         /**
          * initialize new spreadsheet in a new workbook
