@@ -2,7 +2,7 @@
 
     namespace YS\Export;
 
-    use YS\Datatable\AbstractDatatable;
+    use \Illuminate\Support\Str;
     use YS\Export\IncorrectDataSourceException;
     use Illuminate\Support\Facades\Schema;
     use Closure;
@@ -39,7 +39,7 @@
         /** @var int Total number of records in result */
         protected $totalRecords = 0;
 
-        /** @var string  $result query result */
+        /** @var iterablle|Object  $result query result */
         protected  $result;
 
         /**
@@ -127,7 +127,7 @@
                 $this->query = $source;
 
             }
-            else if( $source instanceof \Illuminate\Database\Eloquent\Builder )
+            elseif( $source instanceof \Illuminate\Database\Eloquent\Builder )
             {
                 $this->query = $source->getQuery();
             }
@@ -336,7 +336,7 @@
 
             delete_keys($columns, config('ys-export.skip'));
 
-            $label = str_singular( $table );// to differentiate columns name in case two columns with same name
+            $label =   Str::singular( $table );// to differentiate columns name in case two columns with same name
 
             array_walk($columns, function(&$value)use($table,$label) { $value = "{$table}.{$value} as {$label}_{$value}"; } );
 

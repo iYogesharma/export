@@ -16,8 +16,8 @@
     if(!function_exists('delete_key')) {
         /**
          * Convert string to custom heading case
-         * @param $array reference to array
-         * @param tring $value
+         * @param array $array reference to array
+         * @param string $value
          * @return void
          */
         function delete_key( &$array , string $value ){
